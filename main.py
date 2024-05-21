@@ -17,7 +17,7 @@ tf.random.set_seed(42)
 bt = yf.download('AMZN', start='2023-10-06', end='2023-11-07')
 bt.to_excel("OneMonth.xlsx", index=True)
 # Örnek olarak Apple'ın (AAPL) hisse senedi verilerini indiriyoruz
-df = yf.download('AMZN', start='2015-01-01', end='2023-10-07')
+df = yf.download('AMZN', start='2015-01-01', end='2024-05-21')
 
 # Verileri bir Excel dosyasına yazdırma
 df.to_excel("AAPL_stock_data.xlsx", index=True)
