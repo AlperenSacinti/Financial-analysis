@@ -107,15 +107,17 @@ for days in future_days:
 
 # Mevcut fiyatı al
 current_price = scaler.inverse_transform(last_data[-1].reshape(-1, 1))[0][0]
+current_date = df.index[-1]
+print(f'{current_date.strftime("%Y-%m-%d")} tarihindeki Mevcut Fiyat: {current_price:.2f} USD')
 
-print(f'Mevcut Fiyat: {current_price:.2f} USD')
 # Tahmin sonuçlarını yazdırma ve karşılaştırma
 for days, prediction in future_predictions.items():
     future_price = prediction[-1][0]
     if future_price > current_price:
-        print(f"{days} gün sonrası tahmini: {future_price:.2f} USD - AL")
+        print(f"{days} gün sonrası tahmini ({(current_date + pd.Timedelta(days=days)).strftime('%Y-%m-%d')}): {future_price:.2f} USD - AL")
     else:
-        print(f"{days} gün sonrası tahmini: {future_price:.2f} USD - SAT")
+        print(
+            f"{days} gün sonrası tahmini ({(current_date + pd.Timedelta(days=days)).strftime('%Y-%m-%d')}): {future_price:.2f} USD - SAT")
 
 # Tahmin sonuçlarını görselleştirme
 plt.figure(figsize=(12,6))
