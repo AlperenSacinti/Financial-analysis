@@ -9,8 +9,15 @@ import math
 from sklearn.metrics import mean_squared_error
 import yfinance as yf
 
+import tensorflow as tf
+np.random.seed(42)
+tf.random.set_seed(42)
+
+#Bugüne kadar tüm veriler
+bt = yf.download('AMZN', start='2023-10-06', end='2023-11-07')
+bt.to_excel("OneMonth.xlsx", index=True)
 # Örnek olarak Apple'ın (AAPL) hisse senedi verilerini indiriyoruz
-df = yf.download('AAPL', start='2012-01-01', end='2024-05-05')
+df = yf.download('AMZN', start='2015-01-01', end='2023-10-07')
 
 # Verileri bir Excel dosyasına yazdırma
 df.to_excel("AAPL_stock_data.xlsx", index=True)
@@ -53,7 +60,7 @@ model.add(Dense(1))
 model.compile(optimizer='adam', loss='mean_squared_error')
 
 # Modeli eğitme
-model.fit(X_train, y_train, batch_size=1, epochs=1)
+model.fit(X_train, y_train, batch_size=1, epochs=2)
 
 # Tahmin yapma
 train_predict = model.predict(X_train)
@@ -92,15 +99,23 @@ def predict_future(model, last_data, future_steps):
 last_data = scaled_data[-time_step:]
 
 # Yarın, 1 hafta (7 gün) ve 1 ay (30 gün) sonrasını tahmin etme
-future_days = [1, 7, 30]
+future_days = [1, 7, 15, 30]
 future_predictions = {}
 
 for days in future_days:
     future_predictions[days] = scaler.inverse_transform(predict_future(model, last_data, days))
 
-# Tahmin sonuçlarını yazdırma
+# Mevcut fiyatı al
+current_price = scaler.inverse_transform(last_data[-1].reshape(-1, 1))[0][0]
+
+print(f'Mevcut Fiyat: {current_price:.2f} USD')
+# Tahmin sonuçlarını yazdırma ve karşılaştırma
 for days, prediction in future_predictions.items():
-    print(f"{days} gün sonrası tahmini: {prediction[-1][0]:.2f} USD")
+    future_price = prediction[-1][0]
+    if future_price > current_price:
+        print(f"{days} gün sonrası tahmini: {future_price:.2f} USD - AL")
+    else:
+        print(f"{days} gün sonrası tahmini: {future_price:.2f} USD - SAT")
 
 # Tahmin sonuçlarını görselleştirme
 plt.figure(figsize=(12,6))
